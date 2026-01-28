@@ -37,7 +37,8 @@ git add .
 git commit -m "İlk commit - Vercel'e hazır"
 
 # 5. GitHub repository'nizi ekleyin (GitHub'da göreceksiniz)
-git remote add origin https://github.com/KULLANICI_ADINIZ/dikilihaber.git
+git remote add origin https://github.com/dikilihaberr-cpu/dikilihaber.git
+https://github.com/dikilihaberr-cpu /dikilihaber.git
 
 # 6. GitHub'a yükleyin
 git branch -M main
