@@ -2,7 +2,7 @@
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
-const WhatsAppTipLine = (): JSX.Element => {
+const WhatsAppTipLine = (): React.JSX.Element => {
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <a

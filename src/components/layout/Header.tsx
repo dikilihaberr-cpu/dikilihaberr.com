@@ -1,7 +1,7 @@
 // Header component
 import React from 'react'
 
-const Header = (): JSX.Element => {
+const Header = (): React.JSX.Element => {
   return (
     <header className="bg-accent text-white py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

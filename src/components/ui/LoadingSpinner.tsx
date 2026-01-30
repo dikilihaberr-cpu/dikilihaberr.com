@@ -19,7 +19,7 @@ const LoadingSpinner = ({
   text,
   fullScreen = false,
   className = '',
-}: LoadingSpinnerProps): JSX.Element => {
+}: LoadingSpinnerProps): React.JSX.Element => {
   const spinner = (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <div

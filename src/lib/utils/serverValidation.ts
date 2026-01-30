@@ -62,7 +62,7 @@ export function validateServerInput<T>(
     if (result.success) {
       return { success: true, data: result.data }
     } else {
-      const firstError = result.error.errors[0]
+      const firstError = result.error.issues[0]
       return {
         success: false,
         error: firstError?.message || 'Geçersiz veri',

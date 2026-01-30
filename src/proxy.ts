@@ -58,9 +58,10 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000)
 
-export function middleware(request: NextRequest) {
+// Next.js 16: middleware → proxy (aynı API)
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
 
   // Rate limiting kontrolü (sadece API routes için)
   if (pathname.startsWith('/api/')) {

@@ -72,11 +72,11 @@ export async function POST(request: NextRequest) {
     // Eğer kullanıcı zaten admin değilse ve super_admin değilse, admin ekleme izni yok
     if (!existingAdmin) {
       // İlk kurulum için: Eğer hiç admin yoksa, ilk kullanıcıyı admin yapabilir
-      const { data: adminCount } = await serviceClient
+      const { count: adminCount } = await serviceClient
         .from('admins')
         .select('user_id', { count: 'exact', head: true })
 
-      if (adminCount && adminCount > 0) {
+      if (adminCount != null && adminCount > 0) {
         return NextResponse.json(
           { error: 'Unauthorized - Only existing admins can add new admins' },
           { status: 403 }

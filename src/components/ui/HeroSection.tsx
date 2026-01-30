@@ -4,7 +4,7 @@ import Link from 'next/link';
 import SafeImage from '@/components/ui/SafeImage';
 import { getFeaturedNews, getTrendingNews, getDailyNews, getAllNews, NewsItem } from '@/lib/supabase';
 
-const HeroSection = async (): Promise<JSX.Element> => {
+const HeroSection = async (): Promise<React.JSX.Element> => {
   // Hata yönetimi ile haberleri getir
   let featuredNews: NewsItem[] = [];
   let trendingNews: NewsItem[] = [];

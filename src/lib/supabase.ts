@@ -739,14 +739,14 @@ export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug
     let counter = 1
     let originalSlug = slug
     while (true) {
-      const { data: existing, error: slugCheckError } = await supabase
+      const { data: existing } = await supabase
         .from('news')
         .select('id')
         .eq('slug', slug)
         .maybeSingle()
 
-      // Eğer kayıt yoksa veya hata varsa (PGRST116 = no rows), slug kullanılabilir
-      if (!existing || slugCheckError?.code === 'PGRST116') break
+      // Eğer kayıt yoksa slug kullanılabilir
+      if (!existing) break
 
       slug = `${originalSlug}-${counter}`
       counter++
@@ -942,11 +942,11 @@ export const updateNews = async (id: string, updates: Partial<NewsItem>): Promis
     }
     
     if (updates.image_url !== undefined) {
-      sanitizedUpdates.image_url = updates.image_url ? sanitizeInput(updates.image_url, 'url') : null
+      sanitizedUpdates.image_url = updates.image_url ? sanitizeInput(updates.image_url, 'url') : undefined
     }
     
     if (updates.video_url !== undefined) {
-      sanitizedUpdates.video_url = updates.video_url ? sanitizeInput(updates.video_url, 'url') : null
+      sanitizedUpdates.video_url = updates.video_url ? sanitizeInput(updates.video_url, 'url') : undefined
     }
     
     // Boolean fields - coercion for security
