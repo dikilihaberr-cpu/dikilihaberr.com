@@ -675,17 +675,19 @@ export const getDailyNews = async (): Promise<NewsItem | null> => {
   }
 }
 
-export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug' | 'created_at' | 'updated_at'>): Promise<NewsItem | null> => {
+export type AddNewsResult = { data: NewsItem | null; error: string | null }
+
+export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug' | 'created_at' | 'updated_at'>): Promise<AddNewsResult> => {
   if (!supabase) {
     logger.error('Supabase client not initialized')
-    return null
+    return { data: null, error: 'Veritabanı bağlantısı yok. Ortam değişkenlerini kontrol edin.' }
   }
 
   // SERVER-SIDE ADMIN CHECK - Güvenlik için kritik!
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     logger.error('User not authenticated for news creation')
-    return null
+    return { data: null, error: 'Oturum bulunamadı. Tekrar giriş yapıp deneyin.' }
   }
 
   // Check if user is admin
@@ -697,7 +699,7 @@ export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug
 
   if (!adminCheck) {
     logger.error('Unauthorized news creation attempt:', { userId: user.id })
-    return null
+    return { data: null, error: 'Admin yetkisi yok veya oturum geçersiz.' }
   }
 
   try {
@@ -714,18 +716,18 @@ export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug
     // XSS kontrolü
     if (isSuspiciousInput(sanitizedTitle) || isSuspiciousInput(sanitizedContent) || isSuspiciousInput(sanitizedExcerpt)) {
       logger.error('Suspicious content detected in news:', { title: sanitizedTitle.substring(0, 50) })
-      return null
+      return { data: null, error: 'İçerik güvenlik kontrolünden geçemedi.' }
     }
 
     // Length validation
     if (!sanitizedTitle || sanitizedTitle.length < 5 || sanitizedTitle.length > 200) {
       logger.error('Invalid title length')
-      return null
+      return { data: null, error: 'Başlık 5–200 karakter olmalı.' }
     }
 
     if (!sanitizedContent || sanitizedContent.length < 50) {
       logger.error('Content too short')
-      return null
+      return { data: null, error: 'İçerik en az 50 karakter olmalı.' }
     }
 
     // Create a unique slug
@@ -795,11 +797,11 @@ export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug
 
     if (error) {
       logger.error('Supabase insert error:', error)
-      logger.error('Error code:', error.code)
-      logger.error('Error message:', error.message)
-      logger.error('Error details:', error.details || 'No details available')
-      logger.error('Error hint:', error.hint || 'No hint available')
-      return null
+      const msg = error.message || error.code || 'Veritabanı hatası'
+      const hint = error.code === '42703' || error.message?.includes('column')
+        ? ' Supabase\'te DATABASE_MIGRATION_TRENDING_DAILY.sql dosyasını çalıştırın.'
+        : ''
+      return { data: null, error: msg + hint }
     }
 
     logger.log('News added successfully:', {
@@ -809,15 +811,11 @@ export const addNews = async (news: Omit<NewsItem, 'id' | 'published_at' | 'slug
       is_published: data?.is_published,
       published_at: data?.published_at
     })
-    return data
+    return { data, error: null }
   } catch (err) {
     logger.error('Unexpected error in addNews:', err)
-    if (err instanceof Error) {
-      logger.error('Error name:', err.name)
-      logger.error('Error message:', err.message)
-      logger.error('Error stack:', err.stack)
-    }
-    return null
+    const msg = err instanceof Error ? err.message : 'Beklenmeyen hata'
+    return { data: null, error: msg }
   }
 }
 

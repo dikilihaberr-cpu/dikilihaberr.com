@@ -3,7 +3,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react'
 
 const Footer = (): React.JSX.Element => {
   return (
@@ -39,8 +39,8 @@ const Footer = (): React.JSX.Element => {
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 mr-2" /> 
-                <a href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE || ''}`} className="hover:text-white">
-                  {process.env.NEXT_PUBLIC_CONTACT_PHONE || '+90 (232) 800 00 00'}
+                <a href="tel:+902326710021" className="hover:text-white">
+                  {process.env.NEXT_PUBLIC_CONTACT_PHONE || '0232 671 0021'}
                 </a>
               </li>
               <li className="flex items-center">
@@ -53,29 +53,20 @@ const Footer = (): React.JSX.Element => {
           {/* Sosyal Medya */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Bizi Takip Edin</h4>
-            <div className="flex space-x-4">
-              {process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK && (
-                <a href={process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-blue-100 hover:text-white transition">
-                  <Facebook className="h-6 w-6" />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_SOCIAL_TWITTER && (
-                <a href={process.env.NEXT_PUBLIC_SOCIAL_TWITTER} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-blue-100 hover:text-white transition">
-                  <Twitter className="h-6 w-6" />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM && (
-                <a href={process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-blue-100 hover:text-white transition">
-                  <Instagram className="h-6 w-6" />
-                </a>
-              )}
+            <div className="flex flex-wrap gap-4">
+              <a href="https://www.instagram.com/dikilihaberr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-blue-100 hover:text-white transition">
+                <Instagram className="h-6 w-6" />
+              </a>
+              <a href="https://www.youtube.com/@dikilihaberr" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-blue-100 hover:text-white transition">
+                <Youtube className="h-6 w-6" />
+              </a>
+              <a href="https://www.facebook.com/people/Dikili-Haberr/61585581113939/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-blue-100 hover:text-white transition">
+                <Facebook className="h-6 w-6" />
+              </a>
               {process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN && (
                 <a href={process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-blue-100 hover:text-white transition">
                   <Linkedin className="h-6 w-6" />
                 </a>
-              )}
-              {!process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK && !process.env.NEXT_PUBLIC_SOCIAL_TWITTER && !process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM && !process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN && (
-                <p className="text-blue-100 text-sm">Sosyal medya hesaplarımız yakında eklenecek</p>
               )}
             </div>
           </div>
@@ -104,6 +95,25 @@ const Footer = (): React.JSX.Element => {
               </Link>
             </li>
           </ul>
+        </div>
+
+        {/* En alt: Telefon ve sosyal medya */}
+        <div className="border-t border-blue-400/50 mt-6 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-blue-100 text-sm">
+          <a href="tel:+902326710021" className="flex items-center hover:text-white transition">
+            <Phone className="h-4 w-4 mr-2 shrink-0" />
+            0232 671 0021
+          </a>
+          <div className="flex items-center gap-4">
+            <a href="https://www.instagram.com/dikilihaberr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-white transition">
+              <Instagram className="h-5 w-5" />
+            </a>
+            <a href="https://www.youtube.com/@dikilihaberr" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:text-white transition">
+              <Youtube className="h-5 w-5" />
+            </a>
+            <a href="https://www.facebook.com/people/Dikili-Haberr/61585581113939/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-white transition">
+              <Facebook className="h-5 w-5" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

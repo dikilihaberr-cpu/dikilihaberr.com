@@ -264,9 +264,9 @@ export default function NewNewsPage() {
         is_draft: false // Yayınlanan haber taslak değil
       }
       
-      const success = await addNews(publishedData)
+      const result = await addNews(publishedData)
 
-      if (success) {
+      if (result.data) {
         localStorage.removeItem('newsDraft') // Yayınlandı, localStorage'ı temizle
         showToast('Haber başarıyla yayınlandı!', 'success')
         // Formu sıfırla
@@ -286,7 +286,7 @@ export default function NewNewsPage() {
           isDraft: true,
         })
       } else {
-        showToast('Haber yayınlanırken hata oluştu!', 'error')
+        showToast(result.error || 'Haber yayınlanırken hata oluştu!', 'error')
       }
     } catch (error) {
       logger.error('Error publishing news:', error)

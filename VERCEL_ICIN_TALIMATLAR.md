@@ -16,7 +16,7 @@
 
 1. Vercel dashboard'da **"Add New..."** butonuna tıklayın
 2. **"Project"** seçin
-3. GitHub repository'nizi bulun: **`dikilihaberr-cpu/desktop-tutorial`**
+3. GitHub repository'nizi bulun: **`dikilihaberr-cpu/dikilihaberr.com`**
 4. **"Import"** butonuna tıklayın
 
 **ÖNEMLİ:** Branch'i **"main"** seçtiğinizden emin olun!
