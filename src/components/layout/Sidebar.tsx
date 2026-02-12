@@ -43,6 +43,9 @@ const Sidebar = (): React.JSX.Element => {
       {/* Sidebar Ad Banner - ÜST */}
       <AdBanner position="sidebar" className="w-full" />
 
+      {/* İkinci Reklam - Üst */}
+      <AdBanner position="sidebar" className="w-full" />
+
       {/* Recent News */}
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h3 className="text-lg font-bold text-primary mb-4 flex items-center">
@@ -84,6 +87,9 @@ const Sidebar = (): React.JSX.Element => {
       </div>
 
       {/* Sidebar Ad Banner - ORTA */}
+      <AdBanner position="sidebar" className="w-full" />
+
+      {/* Üçüncü Reklam - Orta */}
       <AdBanner position="sidebar" className="w-full" />
 
       {/* Popular Categories */}
@@ -131,6 +137,12 @@ const Sidebar = (): React.JSX.Element => {
           </button>
         </div>
       </div>
+
+      {/* Sidebar Ad Banner - ALT */}
+      <AdBanner position="sidebar" className="w-full" />
+
+      {/* Dördüncü Reklam - Alt */}
+      <AdBanner position="sidebar" className="w-full" />
     </aside>
   );
 };

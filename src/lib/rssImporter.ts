@@ -1,7 +1,14 @@
 // RSS Feed'lerden Otomatik Haber Çekme ve Ekleme
 import { parseRSSFeed, RSSFeedItem } from './rss'
-import { supabase } from './supabase'
+import { createClient } from '@supabase/supabase-js'
 import { logger } from './utils/logger'
+
+// Server-side için Supabase client (RSS import için)
+const getSupabaseClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  return createClient(supabaseUrl, supabaseAnonKey)
+}
 
 export interface ImportedNewsItem {
   title: string
@@ -35,12 +42,8 @@ export async function importNewsFromRSS(feedUrl: string, feedName: string, categ
     for (const item of feed.items) {
       try {
         // Aynı haber zaten var mı kontrol et
-        // Önce source_url ile kontrol et (eğer kolon varsa), yoksa title ile
-        if (!supabase) {
-          result.errors.push('Supabase bağlantısı yok')
-          continue
-        }
-
+        const supabase = getSupabaseClient()
+        
         let existing = null
         try {
           const response = await supabase
@@ -109,11 +112,6 @@ export async function importNewsFromRSS(feedUrl: string, feedName: string, categ
         // Eğer kolonlar yoksa hata vermez, sadece eklenmez
         newsData.source_url = item.link
         newsData.source_name = feedName
-
-        if (!supabase) {
-          result.errors.push('Supabase bağlantısı yok')
-          continue
-        }
 
         const { error } = await supabase
           .from('news')

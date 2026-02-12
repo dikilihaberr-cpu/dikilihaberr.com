@@ -64,15 +64,22 @@ const HomePage: React.FC = async () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Ad Banner */}
         <div className="mb-8">
-          <AdBanner position="header" className="w-full" />
+          <AdBanner position="header" className="w-full max-w-4xl mx-auto" />
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Sol Reklam Alanı - Desktop'ta görünür */}
+          <div className="hidden xl:block lg:col-span-1">
+            <div className="sticky top-8">
+              <AdBanner position="sidebar" className="w-full" />
+            </div>
+          </div>
+
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-8 xl:col-span-7">
             {/* Hero Section */}
             <HeroSection />
 
@@ -80,9 +87,29 @@ const HomePage: React.FC = async () => {
             <section className="mt-12">
               <h2 className="text-2xl font-bold text-primary mb-6">Son Haberler</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allNews.slice(0, 9).map((news, index) => (
+                {allNews.slice(0, 6).map((news, index) => (
                   <NewsCard
                     key={news?.id || `home-news-${index}`}
+                    title={news?.title || 'Haber Başlığı'}
+                    category={news?.category || 'Gündem'}
+                    publishedAt={news?.published_at ? new Date(news.published_at).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR')}
+                    imageUrl={news?.image_url || (news?.images && news.images.length > 0 ? news.images[0] : 'https://via.placeholder.com/400x300?text=Resim+Yok')}
+                    slug={news?.slug}
+                    excerpt={news?.excerpt}
+                  />
+                ))}
+              </div>
+              
+              {/* İçerik Reklamı - İlk 6 haberden sonra */}
+              <div className="mt-8 mb-8">
+                <AdBanner position="content" className="w-full max-w-2xl mx-auto" />
+              </div>
+
+              {/* Devam Eden Haberler */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                {allNews.slice(6, 12).map((news, index) => (
+                  <NewsCard
+                    key={news?.id || `home-news-${index + 6}`}
                     title={news?.title || 'Haber Başlığı'}
                     category={news?.category || 'Gündem'}
                     publishedAt={news?.published_at ? new Date(news.published_at).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR')}
@@ -121,8 +148,15 @@ const HomePage: React.FC = async () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-4 xl:col-span-3">
             <Sidebar />
+          </div>
+
+          {/* Sağ Reklam Alanı - Sadece çok geniş ekranlarda */}
+          <div className="hidden 2xl:block lg:col-span-1">
+            <div className="sticky top-8">
+              <AdBanner position="sidebar" className="w-full" />
+            </div>
           </div>
         </div>
 
