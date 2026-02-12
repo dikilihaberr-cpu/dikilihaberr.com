@@ -6,6 +6,7 @@ import { addNews, saveDraft } from '@/lib/supabase'
 import ImageUpload from '@/components/ImageUpload'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import RichTextEditor from '@/components/ui/RichTextEditor'
 import { logger } from '@/lib/utils/logger'
 import { showToast } from '@/components/ui/Toast'
 
@@ -31,6 +32,8 @@ export default function NewNewsPage() {
 
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true)
   const [lastSaved, setLastSaved] = useState<string | null>(null)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
 
   const categories = ['Gündem', 'Siyaset', 'Ekonomi', 'Spor', 'Magazin', 'Teknoloji']
 
@@ -226,6 +229,9 @@ export default function NewNewsPage() {
   }
 
   const saveAsDraft = async () => {
+    if (isSavingDraft || isPublishing) return // Çift tıklama engelleme
+    
+    setIsSavingDraft(true)
     try {
       const draftData = {
         ...formData,
@@ -245,15 +251,20 @@ export default function NewNewsPage() {
     } catch (error) {
       logger.error('Error saving draft:', error)
       showToast('Taslak kaydedilirken beklenmedik bir hata oluştu!', 'error')
+    } finally {
+      setIsSavingDraft(false)
     }
   }
 
   const publishNews = async () => {
+    if (isPublishing || isSavingDraft) return // Çift tıklama engelleme
+    
     if (!formData.title || !formData.content || !formData.category) {
       showToast('Lütfen zorunlu alanları doldurun!', 'warning')
       return
     }
 
+    setIsPublishing(true)
     try {
       const publishedData = {
         ...formData,
@@ -285,12 +296,18 @@ export default function NewNewsPage() {
           isPublished: false,
           isDraft: true,
         })
+        // Başarılı yayınlamadan sonra haber listesine yönlendir
+        setTimeout(() => {
+          window.location.href = '/admin/news'
+        }, 1500)
       } else {
         showToast(result.error || 'Haber yayınlanırken hata oluştu!', 'error')
       }
     } catch (error) {
       logger.error('Error publishing news:', error)
       showToast('Haber yayınlanırken beklenmedik bir hata oluştu!', 'error')
+    } finally {
+      setIsPublishing(false)
     }
   }
 
@@ -339,15 +356,14 @@ export default function NewNewsPage() {
           {/* İçerik */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-700">İçerik *</label>
-            <textarea
-              name="content"
+            <RichTextEditor
               value={formData.content || ''}
-              onChange={handleInputChange}
-              placeholder="Haber içeriğini yazın..."
-              rows={8}
-              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-              required
+              onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+              placeholder="Haber içeriğini yazın... (Başlık, madde işaretleri, kalın/italik metin, resim ekleyebilirsiniz)"
             />
+            <p className="text-xs text-gray-500 mt-2">
+              💡 İpucu: Metni seçerek kalın, italik yapabilir, başlık ekleyebilir, madde işaretleri kullanabilirsiniz.
+            </p>
           </div>
 
           {/* Kategori ve Yazar */}
@@ -563,18 +579,35 @@ export default function NewNewsPage() {
             <button
               type="button"
               onClick={publishNews}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition"
+              disabled={isPublishing || isSavingDraft}
+              className={`bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition ${
+                isPublishing || isSavingDraft
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-blue-700'
+              }`}
             >
-              📤 Haber Yayınla
+              {isPublishing ? '⏳ Yayınlanıyor...' : '📤 Haber Yayınla'}
             </button>
             <button
               type="button"
               onClick={saveAsDraft}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold transition"
+              disabled={isPublishing || isSavingDraft}
+              className={`bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition ${
+                isPublishing || isSavingDraft
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-700'
+              }`}
             >
-              💾 Taslak Olarak Kaydet
+              {isSavingDraft ? '⏳ Kaydediliyor...' : '💾 Taslak Olarak Kaydet'}
             </button>
-            <Link href="/admin/news" className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold transition text-center inline-block">
+            <Link 
+              href="/admin/news" 
+              className={`bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold transition text-center inline-block ${
+                isPublishing || isSavingDraft
+                  ? 'opacity-50 pointer-events-none'
+                  : 'hover:bg-gray-300'
+              }`}
+            >
               ❌ İptal
             </Link>
           </div>

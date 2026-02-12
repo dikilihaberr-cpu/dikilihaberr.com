@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getNewsByIdAdmin, updateNews, NewsItem } from '@/lib/supabase'
 import ImageUpload from '@/components/ImageUpload'
+import RichTextEditor from '@/components/ui/RichTextEditor'
 import { showToast } from '@/components/ui/Toast'
 import { use } from 'react'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
@@ -320,15 +321,14 @@ export default function EditNewsPage({ params }: EditNewsPageProps) {
             <label htmlFor="content" className="block text-sm font-medium mb-2 text-gray-700">
               İçerik *
             </label>
-            <textarea
-              id="content"
-              name="content"
+            <RichTextEditor
               value={formData.content || ''}
-              onChange={handleInputChange}
-              rows={10}
-              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-              required
+              onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+              placeholder="Haber içeriğini yazın... (Başlık, madde işaretleri, kalın/italik metin, resim ekleyebilirsiniz)"
             />
+            <p className="text-xs text-gray-500 mt-2">
+              💡 İpucu: Metni seçerek kalın, italik yapabilir, başlık ekleyebilir, madde işaretleri kullanabilirsiniz.
+            </p>
           </div>
 
           {/* Kategori ve Yazar */}

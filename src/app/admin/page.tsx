@@ -84,11 +84,16 @@ export default function AdminDashboard() {
     }
   }
 
-  if (loading) {
+  // Auth loading kontrolü - sonsuz döngü önleme
+  if (authLoading) {
     return <LoadingSpinner fullScreen text="Yükleniyor..." />
   }
 
-  if (!isAdmin) {
+  if (loading && !authLoading) {
+    return <LoadingSpinner fullScreen text="Veriler yükleniyor..." />
+  }
+
+  if (!isAdmin && !authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

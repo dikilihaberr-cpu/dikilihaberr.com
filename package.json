@@ -16,15 +16,16 @@
     "next": "^16.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-quill-new": "^3.8.3",
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.0.1",
     "dotenv": "^17.2.3",
-    "@eslint/eslintrc": "^3",
     "eslint": "^9",
     "eslint-config-next": "^15.5.0",
     "pg": "^8.17.2",

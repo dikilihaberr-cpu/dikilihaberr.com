@@ -14,9 +14,13 @@ export function useAdminAuth() {
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
+    let mounted = true
+    
     const checkAccess = async () => {
       setLoading(true)
       const result: AdminCheckResult = await checkAdminAccess()
+
+      if (!mounted) return // Component unmount kontrolü
 
       if (!result.isAdmin) {
         // Not admin - redirect to login or home
@@ -25,17 +29,24 @@ export function useAdminAuth() {
         } else {
           router.push('/')
         }
+        setLoading(false)
         return
       }
 
       // User is admin
-      setIsAdmin(true)
-      setUserEmail(result.userEmail)
-      setLoading(false)
+      if (mounted) {
+        setIsAdmin(true)
+        setUserEmail(result.userEmail)
+        setLoading(false)
+      }
     }
 
     checkAccess()
-  }, [router])
+    
+    return () => {
+      mounted = false // Cleanup
+    }
+  }, []) // router dependency kaldırıldı - sonsuz döngü önleme
 
   return { isAdmin, loading, userEmail }
 }
