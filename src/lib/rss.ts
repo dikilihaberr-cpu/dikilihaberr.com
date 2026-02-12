@@ -35,7 +35,7 @@ export async function parseRSSFeed(feedUrl: string): Promise<RSSFeed | null> {
 
     const items: RSSFeedItem[] = feed.items.slice(0, 20).map((item) => {
       // HTML tag'lerini temizle (sadece metin al)
-      const cleanDescription = item.contentSnippet || item.content || item.description || ''
+      const cleanDescription = (item.contentSnippet || item.content || (item as any).description || '').toString()
       const textOnly = cleanDescription
         .replace(/<[^>]*>/g, '') // HTML tag'lerini kaldır
         .replace(/&nbsp;/g, ' ')
@@ -45,14 +45,15 @@ export async function parseRSSFeed(feedUrl: string): Promise<RSSFeed | null> {
 
       // Image URL'i bul
       let imageUrl: string | undefined
+      const itemAny = item as any
       if (item.enclosure?.url && item.enclosure.type?.startsWith('image/')) {
         imageUrl = item.enclosure.url
       }
-      if ((item as any)['media:content']?.['$']?.url && !imageUrl) {
-        imageUrl = (item as any)['media:content']['$'].url
+      if (itemAny['media:content']?.['$']?.url && !imageUrl) {
+        imageUrl = itemAny['media:content']['$'].url
       }
-      if (item.itunes?.image && !imageUrl) {
-        imageUrl = item.itunes.image
+      if (itemAny.itunes?.image && !imageUrl) {
+        imageUrl = itemAny.itunes.image
       }
 
       return {

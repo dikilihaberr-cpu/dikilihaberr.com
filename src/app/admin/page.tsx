@@ -172,7 +172,7 @@ export default function AdminDashboard() {
           <QuickActionButton href="/admin/users" label="👥 Kullanıcıları Yönet" color="purple" />
           <QuickActionButton href="/admin/comments" label="💬 Yorumları Kontrol Et" color="red" />
           <QuickActionButton href="/admin/ads" label="📢 Reklamları Yönet" color="yellow" />
-          <QuickActionButton href="/admin/rss" label="📡 RSS Feed Yönet" color="indigo" />
+          <QuickActionButton href="/admin/rss" label="📡 RSS Feed Yönet" color="blue" />
         </div>
 
         {/* Content Sections */}
