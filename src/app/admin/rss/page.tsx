@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { showToast } from '@/components/ui/Toast'
-import { Plus, Trash2, RefreshCw, ExternalLink } from 'lucide-react'
+import { Plus, Trash2, RefreshCw, ExternalLink, Download } from 'lucide-react'
 import { logger } from '@/lib/utils/logger'
 
 interface RSSFeedConfig {
@@ -24,6 +24,8 @@ export default function RSSManagement() {
   const [newFeed, setNewFeed] = useState({ name: '', url: '', category: '' })
   const [testingUrl, setTestingUrl] = useState('')
   const [testResult, setTestResult] = useState<any>(null)
+  const [importing, setImporting] = useState(false)
+  const [importResult, setImportResult] = useState<any>(null)
 
   useEffect(() => {
     if (isAdmin && !loading) {
@@ -102,6 +104,53 @@ export default function RSSManagement() {
     } catch (error) {
       logger.error('Error testing RSS feed:', error)
       showToast('RSS feed test edilemedi!', 'error')
+    }
+  }
+
+  const importNews = async () => {
+    const activeFeeds = feeds.filter(f => f.enabled)
+    
+    if (activeFeeds.length === 0) {
+      showToast('Aktif RSS feed bulunamadı!', 'warning')
+      return
+    }
+
+    setImporting(true)
+    setImportResult(null)
+
+    try {
+      const response = await fetch('/api/rss/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          feeds: activeFeeds.map(f => ({
+            name: f.name,
+            url: f.url,
+            category: f.category,
+            enabled: f.enabled
+          }))
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.error) {
+        setImportResult({ error: data.error })
+        showToast('Haber çekilemedi!', 'error')
+      } else {
+        setImportResult(data)
+        const total = data.totalImported || 0
+        const skipped = data.totalSkipped || 0
+        showToast(`${total} haber çekildi, ${skipped} haber atlandı!`, 'success')
+      }
+    } catch (error) {
+      logger.error('Error importing RSS news:', error)
+      showToast('Haber çekilemedi!', 'error')
+      setImportResult({ error: 'Sunucu hatası' })
+    } finally {
+      setImporting(false)
     }
   }
 
@@ -188,14 +237,74 @@ export default function RSSManagement() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">RSS Feed'ler</h2>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Yeni Feed Ekle
-            </button>
+            <div className="flex gap-3">
+              {feeds.filter(f => f.enabled).length > 0 && (
+                <button
+                  onClick={importNews}
+                  disabled={importing}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center"
+                >
+                  {importing ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                      Çekiliyor...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-5 w-5 mr-2" />
+                      RSS'den Haber Çek
+                    </>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Yeni Feed Ekle
+              </button>
+            </div>
           </div>
+
+          {/* Import Sonuçları */}
+          {importResult && (
+            <div className={`mb-6 p-4 rounded-lg ${importResult.error ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+              {importResult.error ? (
+                <p className="text-red-800 font-semibold">❌ Hata: {importResult.error}</p>
+              ) : (
+                <div>
+                  <p className="text-green-800 font-semibold mb-2">✅ Haber Çekme Tamamlandı!</p>
+                  <p className="text-sm text-green-700">
+                    <strong>{importResult.totalImported || 0}</strong> yeni haber eklendi,{' '}
+                    <strong>{importResult.totalSkipped || 0}</strong> haber atlandı (zaten mevcut).
+                  </p>
+                  {importResult.feedResults && importResult.feedResults.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-sm font-semibold text-green-800">Feed Bazında Sonuçlar:</p>
+                      {importResult.feedResults.map((result: any, idx: number) => (
+                        <div key={idx} className="text-sm text-green-700 pl-4">
+                          • <strong>{result.feedName}</strong>: {result.imported} eklendi, {result.skipped} atlandı
+                          {result.errors && result.errors.length > 0 && (
+                            <div className="text-red-600 text-xs pl-4 mt-1">
+                              Hatalar: {result.errors.slice(0, 3).join(', ')}
+                              {result.errors.length > 3 && ` (+${result.errors.length - 3} daha)`}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Link
+                    href="/admin/news?status=draft"
+                    className="mt-3 inline-block text-blue-600 hover:text-blue-700 text-sm font-semibold"
+                  >
+                    → Çekilen haberleri görüntüle ve onayla
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Add Form */}
           {showAddForm && (
