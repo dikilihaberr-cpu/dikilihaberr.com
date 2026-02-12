@@ -166,12 +166,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <QuickActionButton href="/admin/news/new" label="+ Yeni Haber" color="blue" />
           <QuickActionButton href="/admin/news" label="📝 Haberleri Yönet" color="green" />
           <QuickActionButton href="/admin/users" label="👥 Kullanıcıları Yönet" color="purple" />
           <QuickActionButton href="/admin/comments" label="💬 Yorumları Kontrol Et" color="red" />
           <QuickActionButton href="/admin/ads" label="📢 Reklamları Yönet" color="yellow" />
+          <QuickActionButton href="/admin/rss" label="📡 RSS Feed Yönet" color="indigo" />
         </div>
 
         {/* Content Sections */}
